@@ -1,4 +1,5 @@
 /* eslint-disable react/prop-types */
+import iconUrl from "../assets/clock-counter-clockwise.svg"
 import { useEffect, useState } from "react";
 import {
 	MapContainer,
@@ -15,7 +16,7 @@ const Map = ({ previousLocations, userLocation, radius }) => {
 	const [restaurants, setRestaurants] = useState([]);
 
 	const recentIcon = new Icon({
-		iconUrl: "/src/assets/clock-counter-clockwise.svg",
+		iconUrl,
 		iconSize: [24, 24],
 	});
 
