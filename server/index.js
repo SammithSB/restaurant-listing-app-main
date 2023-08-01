@@ -1,11 +1,10 @@
-
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
+import locationRoute from "./Routes/location.js";
 
 dotenv.config();
-
 
 const app = express();
 
@@ -19,10 +18,8 @@ mongoose
 		console.error(err);
 	});
 
-app.get("/", (req, res) => {
-	res.send("Hello World!");
-});
+app.use("/api/location", locationRoute);
 
-app.listen(5000, () => {
-	console.log("Server listening on port 5000");
+app.listen(4000, () => {
+	console.log("Server listening on port 4000");
 });

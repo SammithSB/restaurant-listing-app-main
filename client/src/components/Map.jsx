@@ -1,5 +1,4 @@
 /* eslint-disable react/prop-types */
-import iconUrl from "../assets/clock-counter-clockwise.svg"
 import { useEffect, useState } from "react";
 import {
 	MapContainer,
@@ -11,6 +10,7 @@ import {
 } from "react-leaflet";
 import axios from "axios";
 import { Icon } from "leaflet";
+import iconUrl from "../assets/clock-counter-clockwise.svg";
 
 const Map = ({ previousLocations, userLocation, radius }) => {
 	const [restaurants, setRestaurants] = useState([]);
@@ -69,21 +69,29 @@ const Map = ({ previousLocations, userLocation, radius }) => {
 				</CircleMarker>
 
 				{/* render only from the 1st item in the array */}
-				{previousLocations.length > 1 &&
-					previousLocations.map((location, index) => (
-						<Marker
-							key={index}
-							icon={recentIcon}
-							position={[location.latitude, location.longitude]}
-						>
-							{location.latitude === userLocation.latitude &&
-							location.longitude === userLocation.longitude ? null : (
-								<Popup>
-									<h2 className="text-md font-semibold">Previous Location</h2>
-								</Popup>
-							)}
-						</Marker>
-					))}
+				{previousLocations.length > 0 &&
+					previousLocations.map((location, index) => {
+						if (
+							location.latitude === userLocation.latitude &&
+							location.longitude === userLocation.longitude
+						) {
+							return null;
+						}
+						return (
+							<Marker
+								key={index}
+								icon={recentIcon}
+								position={[location.latitude, location.longitude]}
+							>
+								{location.latitude === userLocation.latitude &&
+								location.longitude === userLocation.longitude ? null : (
+									<Popup>
+										<h2 className="text-md font-semibold">Previous Location</h2>
+									</Popup>
+								)}
+							</Marker>
+						);
+					})}
 
 				{restaurants?.map((restaurant) => (
 					<Marker

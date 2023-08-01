@@ -18,11 +18,13 @@ function App() {
 		if ("geolocation" in navigator) {
 			navigator.geolocation.getCurrentPosition(
 				async (position) => {
-					const { latitude, longitude } = position.coords;
+					console.log(previousLocations);
+					const latitude = position.coords.latitude.toString();
+					const longitude = position.coords.longitude.toString();
 					setUserLocation({ latitude, longitude });
 
 					const response = await axios.get(
-						"http://localhost:5000/api/location/"
+						"http://localhost:4000/api/location/"
 					);
 					const locationStored = response.data;
 					//check if the location is already present in the database
@@ -35,7 +37,7 @@ function App() {
 						locationStored.length <= 10
 					) {
 						const response = await axios.post(
-							"http://localhost:5000/api/location/",
+							"http://localhost:4000/api/location/",
 							{
 								latitude: latitude,
 								longitude: longitude,
@@ -51,7 +53,14 @@ function App() {
 							},
 						]);
 					} else {
-						setPreviousLocations(locationStored);
+						setPreviousLocations(
+							locationStored.map((location) => {
+								return {
+									latitude: location.latitude,
+									longitude: location.longitude,
+								};
+							})
+						);
 					}
 				},
 				(error) => {
