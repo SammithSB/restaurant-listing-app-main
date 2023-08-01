@@ -24,7 +24,7 @@ function App() {
 					setUserLocation({ latitude, longitude });
 
 					const response = await axios.get(
-						"http://localhost:4000/api/location/"
+						"https://listoraunt.onrender.com/api/location"
 					);
 					const locationStored = response.data;
 					//check if the location is already present in the database
@@ -37,7 +37,7 @@ function App() {
 						locationStored.length <= 10
 					) {
 						const response = await axios.post(
-							"http://localhost:4000/api/location/",
+							"https://listoraunt.onrender.com/api/location",
 							{
 								latitude: latitude,
 								longitude: longitude,
