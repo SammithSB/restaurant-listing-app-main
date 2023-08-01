@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import Map from "./components/Map";
+import axios from "axios";
 
 function App() {
 	const [radius, setRadius] = useState(20);
 	const [previousLocations, setPreviousLocations] = useState([
-		{ latitude: "12.9737507", longitude: "77.5077853" },
-		{ latitude: "12.9922974", longitude: "77.5781866" },
-		{ latitude: "12.8896974", longitude: "77.5574752" },
+		{ latitude: "12.9573", longitude: "77.9956" },
+		// { latitude: "12.9922974", longitude: "77.5781866" },
+		// { latitude: "12.8896974", longitude: "77.5574752" },
 	]);
 	const [userLocation, setUserLocation] = useState({
 		latitude: "12.96",
@@ -16,49 +17,41 @@ function App() {
 	useEffect(() => {
 		if ("geolocation" in navigator) {
 			navigator.geolocation.getCurrentPosition(
-				(position) => {
+				async (position) => {
 					const { latitude, longitude } = position.coords;
 					setUserLocation({ latitude, longitude });
-					// if local storage contains previous locations array, get the array and add the new location to it
-					// else, create a new array with the new location
-					if (localStorage.getItem("previousLocations")) {
-						const previousLocations = JSON.parse(
-							localStorage.getItem("previousLocations")
-						);
 
-						// push only if the location is not already present in the array and check for only until two decimal places and array length is less than or equal to 10
-						if (
-							!previousLocations.some(
-								(location) =>
-									location.latitude === latitude &&
-									location.longitude === longitude
-							) &&
-							previousLocations.length <= 10
-						) {
-							previousLocations.push({
+					const response = await axios.get(
+						"http://localhost:5000/api/location/"
+					);
+					const locationStored = response.data;
+					//check if the location is already present in the database
+					if (
+						!locationStored.some(
+							(location) =>
+								location.latitude === latitude &&
+								location.longitude === longitude
+						) &&
+						locationStored.length <= 10
+					) {
+						const response = await axios.post(
+							"http://localhost:5000/api/location/",
+							{
 								latitude: latitude,
 								longitude: longitude,
-							});
-							setPreviousLocations(previousLocations);
-							localStorage.setItem(
-								"previousLocations",
-								JSON.stringify(previousLocations)
-							);
-						}
-					} else {
-						// latitude and longitude should be rounded to two decimal places
-						const newPreviousLocations = [
+							}
+						);
+						console.log(response);
+						// update previous locations array
+						setPreviousLocations([
+							...previousLocations,
 							{
 								latitude: latitude,
 								longitude: longitude,
 							},
-							...previousLocations,
-						];
-						setPreviousLocations(newPreviousLocations);
-						localStorage.setItem(
-							"previousLocations",
-							JSON.stringify(previousLocations)
-						);
+						]);
+					} else {
+						setPreviousLocations(locationStored);
 					}
 				},
 				(error) => {
@@ -71,7 +64,7 @@ function App() {
 			console.error("Geolocation is not available in this browser.");
 			alert("Geolocation is not available in this browser.");
 		}
-	}, [previousLocations]);
+	}, []);
 
 	return (
 		<>
